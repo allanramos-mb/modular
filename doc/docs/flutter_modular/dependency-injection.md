@@ -4,9 +4,9 @@ sidebar_position: 3
 
 # Dependency Injection
 
-We generally code with maintainability and scalability in mind, applying project-specific patterns
-to a given function and improving the structure of our code. We must pay attention to our code, 
-otherwise it can become a hidden problem. Let's look at a practical example:
+We generally code with maintenance and scalability in mind, applying project-specific patterns
+to a given function and improving the structure of our code. We must to pay attention on our code,
+or else it can be a covertly problem. Let's look at the practical example:
 
 ```dart
 class Client {
@@ -21,13 +21,13 @@ Here we have a **Client** class with a method called **sendEmail()** running the
 Despite being a simple and functional approach, having a class instance within the method, it presents some problems:
 
 - Makes it impossible to replace the instance `xpto`.
-- Makes Unit Tests more difficult, as you would not be able to create `XPTOEmail()` Fake/Mock instance.
+- Makes the Unit Tests difficult, as you would not be able to create `XPTOEmail()` Fake/Mock instance.
 - Entirely dependent on the functioning of an external class.
 
-We call it "Dependency Coupling" when we use an outer class in this way, because the *Client* class
+We call it "Dependency Coupling" when we use an outer class in this way, because the _Client_ class
 is totally dependent on the functioning of the **XPTOEmail** object.
 
-To break a class's bond with its dependency, we generally prefer to "inject" the dependency instances through a constructor, setters, or methods. That's what we call "Dependency Injection".
+To break a class's bond with its dependency, we generally prefer to "inject" the dependency instances by constructor, setters or methods. That's what we call "Dependency Injection".
 
 Let's fix the **Customer** class by injecting the **XPTOEmail** instance by constructor:
 
@@ -42,11 +42,13 @@ class Client {
   }
 }
 ```
-This way, we reduce the coupling **XPTOEmail** object has to the **Client** object.
 
-We still have a problem with this implementation. Despite *cohesion*, the Client class has a dependency on an external source, and even being injected by constructor, replacing it with another email service would not be a simple task.
-Our code still has coupling, but we can improve this using `interfaces`. Let's create an interface
-to define a signature, or "contract" for the **sendEmail** method. With this in place, any class that implements this interface can be injected into the class **Client**:
+Thereway, we reduce the coupling **XPTOEmail** object did to the **Client** object.
+
+We still have a problem with this implementation. Despite _cohesion_, the Client class has a dependency on an external source,
+and even being injected by constructor, replacing it with another email service would not be a simple task.
+Our code still have coupling, but we can improve this using `interfaces`. Let's create an interface
+to sign the **sendEmail** method. With this any class that implements this interface can be injected into the class **Client**:
 
 ```dart
 abstract class EmailService {
@@ -90,20 +92,21 @@ final service = XPTOEmailService(xpto)
 final client = Client(service);
 ```
 
-This object creation method solves coupling issues but may increase instance creation complexity, as we can see in the **Client** class. The **flutter_modular** Dependency Injection System solves this problem simply and effectively.
+This type of object creation solves the coupling but can increase the instance creation complexity, as we can see in the **Client** class. The **flutter_modular** Dependency Injection System solves this problem simply and effectively.
 
 ## Instance registration
 
 The strategy for building an instance with its dependencies comprise register all objects in a module and
-manufactures them on demand or in single-instance form(singleton). This 'registration' is called **Bind**.
+manufactures them on demand or in single-instance form(singleton).
 
+A estratégia para construir uma instância com suas dependências consiste em registrar todos os objetos em um módulo e
+fabrica-los sobre demanda ou em forma de instância única(singleton). This 'registration' is called **Bind**.
 There are a few ways to build a Bind to register object instances:
 
-
-- *Bind.singleton*: Build an instance only once when the module starts.
-- *Bind.lazySingleton*: Build an instance only once when prompted.
-- *Bind.factory*: Build an instance on demand.
-- *Bind.instance*: Adds an existing instance.
+- _Bind.singleton_: Build an instance only once when the module starts.
+- _Bind.lazySingleton_: Build an instance only once when prompted.
+- _Bind.factory_: Build an instance on demand.
+- _Bind.instance_: Adds an existing instance.
 
 We register the binds in **AppModule**:
 
@@ -115,11 +118,12 @@ class AppModule extends Module {
     Bind.factory<EmailService>((i) => XPTOEmailService(i()))
     Bind.singleton((i) => Client(i()))
   ];
-  
+
   ...
 }
 ```
-Note that we placed an `i()` instead of the dependencies instance. This will be responsible to allocate the
+
+Note that we placed an `i()` instead of the dependencies instance. This will be responsible for resolving the
 dependencies automatically.
 
 To get a resolved instance use `Modular.get`:
@@ -152,12 +156,13 @@ class AppModule extends Module {
 }
 ```
 
-By now we need to transform the AsyncBind into synchronous Bind in order to resolve the other instances. Therefore, 
+By now we need to transform the AsyncBind into synchronous Bind in order to resolve the other instances. Thereunto
 we use **Modular.isModuleReady()** passing the module type in generics;
 
 ```dart
 await Modular.isModuleReady<AppModule>();
 ```
+
 This action will convert all AsyncBinds to synchronous Binds and singletons.
 
 :::tip TIP
@@ -169,8 +174,8 @@ We can get the asynchronous instance directly too without having to convert to a
 
 ## Auto Dispose
 
-The lifetime of a Bind singleton ends when its module 'dies'. But there are some objects that, by default, 
-run an instance destruction routine and are automatically removed from memory. Here they are:
+The lifetime of a Bind singleton ends when its module 'dies'. But there are some objects that, by default,
+runs by an instance destruction routine and automatically removed from memory. Here they are:
 
 - Stream/Sink (Dart Native).
 - ChangeNotifier/ValueNotifier (Flutter Native).
@@ -190,41 +195,13 @@ class MyController implements Disposable {
 
 The dispose of an instance can be set directly in `Bind` by implementing the `onDispose` property:
 
-```dart
-@override
-final List<Bind> binds = [
-  Bind.singleton((i) => MyBloc(), onDispose: (bloc) => bloc.close()),
-];
-```
-
-:::tip TIP
-
-There are pre-configured `Bind` for BLoC and Triple.
-See the packages [modular_bloc_bind](https://pub.dev/packages/modular_bloc_bind) and [modular_triple_bind](https://pub.dev/packages/modular_triple_bind)
+As BLoC is based on Streams, the memory release takes effect automatically.
 
 :::
 
-**flutter_modular** also offers a singleton removal option from the dependency injection system 
-by calling the **Modular.dispose**() method even with an active module:
+**flutter_modular** also offers a singleton removal option from the dependency injection system
+calling the **Modular.dispose**() method even with a active module:
 
 ```dart
 Modular.dispose<MySingletonBind>();
 ```
-
-## Hot Reload
-
-The modular is hot-reload friendly, but, singleton binds are not notified.
-Use the ReassembleMixin for this:
-
-```dart
-import 'package:flutter_modular/flutter_modular.dart';
-
-class ProductController with ReassembleMixin {
-  @override
-  void reassemble() {
-    //called when the hot reload happens.
-    print('reassemble');
-  }
-}
-```
-
