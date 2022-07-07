@@ -79,10 +79,8 @@ class MyInjectModule extends BindContextImpl {
         _Bind<String>((i) => 'Jacob', scoped: true),
         _Bind<bool>((i) => true),
         _Bind<double>((i) => 0.0, lazy: false),
-        _Bind<MyObjectWithReassemble>((i) => MyObjectWithReassemble(),
-            lazy: false),
-        _Bind<MyObjectWithlessReassemble>((i) => MyObjectWithlessReassemble(),
-            lazy: false),
+        _Bind<MyObjectWithReassemble>((i) => MyObjectWithReassemble(), lazy: false),
+        _Bind<MyObjectWithlessReassemble>((i) => MyObjectWithlessReassemble(), lazy: false),
       ];
 }
 
@@ -116,6 +114,7 @@ class _Bind<T extends Object> extends BindContract<T> {
     bool? isLazy,
     bool? export,
     bool? isScoped,
+    String? name,
     bool? alwaysSerialized,
     void Function(T value)? onDispose,
     Function(T value)? selector,

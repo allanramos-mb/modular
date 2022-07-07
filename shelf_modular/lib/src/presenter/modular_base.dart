@@ -74,8 +74,7 @@ class ModularBase implements IModularBase {
       this.reportPush);
 
   @override
-  bool dispose<B extends Object>() =>
-      disposeBind<B>().getOrElse((left) => false);
+  bool dispose<B extends Object>() => disposeBind<B>().getOrElse((left) => false);
 
   @override
   B get<B extends Object>({B? defaultValue}) {
@@ -113,17 +112,15 @@ class ModularBase implements IModularBase {
   @override
   Handler call({required RouteContext module}) {
     if (!_moduleHasBeenStarted) {
-      startModule(module)
-          .fold((l) => throw l, (r) => print('${module.runtimeType} started!'));
+      startModule(module).fold((l) => throw l, (r) => print('${module.runtimeType} started!'));
       _moduleHasBeenStarted = true;
 
-      setDisposeResolver(disposeBindFunction);
+      // setDisposeResolver(disposeBindFunction);
 
       setPrintResolver(print);
       return handler;
     } else {
-      throw ModuleStartedException(
-          'Module ${module.runtimeType} is already started');
+      throw ModuleStartedException('Module ${module.runtimeType} is already started');
     }
   }
 
@@ -135,17 +132,13 @@ class ModularBase implements IModularBase {
     Response response;
     try {
       final data = await tryJsonDecode(request);
-      final params = RouteParmsDTO(
-          url: '/${request.url.toString()}',
-          schema: request.method,
-          arguments: data);
+      final params =
+          RouteParmsDTO(url: '/${request.url.toString()}', schema: request.method, arguments: data);
       final result = await getRoute.call(params);
-      response = await result.fold<FutureOr<Response>>(
-          _routeError, (r) => _routeSuccess(r, request));
+      response =
+          await result.fold<FutureOr<Response>>(_routeError, (r) => _routeSuccess(r, request));
     } on Exception catch (e) {
-      if (e
-          .toString()
-          .contains('Exception: Got a response for hijacked request')) {
+      if (e.toString().contains('Exception: Got a response for hijacked request')) {
         response = Response.ok('');
       } else {
         rethrow;
@@ -174,8 +167,7 @@ class ModularBase implements IModularBase {
         final response = applyHandler(
           route.handler!,
           request: request,
-          arguments:
-              getArguments().getOrElse((left) => ModularArguments.empty()),
+          arguments: getArguments().getOrElse((left) => ModularArguments.empty()),
           injector: injector<Injector>(),
         );
         if (response != null) {
@@ -239,8 +231,7 @@ class ModularBase implements IModularBase {
     // }
   }
 
-  bool _isMultipart(Request request) =>
-      _extractMultipartBoundary(request) != null;
+  bool _isMultipart(Request request) => _extractMultipartBoundary(request) != null;
 
   String? _extractMultipartBoundary(Request request) {
     if (!request.headers.containsKey('Content-Type')) return null;

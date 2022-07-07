@@ -25,3 +25,18 @@ class SearchByTextImpl implements SearchByText {
     return await repository.getUsers(textSearch!);
   }
 }
+
+@Injectable(singleton: false)
+class SearchByTextSearchImpl implements SearchByText {
+  final SearchRepository repository;
+
+  SearchByTextSearchImpl(this.repository);
+
+  @override
+  Future<Either<Failure, List<Result>>> call(String? textSearch) async {
+    if (textSearch?.isEmpty ?? true) {
+      return Left(InvalidSearchText());
+    }
+    return await repository.getUsers(textSearch!);
+  }
+}

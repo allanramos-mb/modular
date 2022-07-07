@@ -22,6 +22,10 @@ abstract class BindContract<T extends Object> {
   ///When 'false', the object is instantiated along with the module.
   final bool isLazy;
 
+  /// TODO: When 'true', the object is instantiated only the first time it is called.
+  ///When 'false', the object is instantiated along with the module.
+  final String name;
+
   ///Called in module`s dispose.
   final void Function(T value)? onDispose;
 
@@ -37,7 +41,9 @@ abstract class BindContract<T extends Object> {
     this.alwaysSerialized = false,
     this.onDispose,
     this.selector,
-  }) : assert((isSingleton || isLazy), r"'singleton' can't be false if 'lazy' is also false");
+    this.name = '',
+  }) : assert((isSingleton || isLazy),
+            r"'singleton' can't be false if 'lazy' is also false");
 
   BindContract<T> copyWith({
     T Function(Injector i)? factoryFunction,
@@ -46,6 +52,7 @@ abstract class BindContract<T extends Object> {
     bool? export,
     bool? isScoped,
     bool? alwaysSerialized,
+    String? name,
     void Function(T value)? onDispose,
     dynamic Function(T value)? selector,
   });
@@ -74,6 +81,7 @@ class BindEmpty extends BindContract<Object> {
       bool? export,
       bool? isScoped,
       bool? alwaysSerialized,
+      String? name,
       void Function(Object value)? onDispose,
       Function(Object value)? selector}) {
     throw UnimplementedError();

@@ -7,6 +7,7 @@ class Bind<T extends Object> extends BindContract<T> {
     bool isSingleton = true,
     bool isLazy = true,
     bool export = false,
+    String name = '',
     bool alwaysSerialized = false,
     void Function(T value)? onDispose,
     dynamic Function(T value)? selector,
@@ -49,11 +50,7 @@ class Bind<T extends Object> extends BindContract<T> {
       void Function(T value)? onDispose,
       dynamic Function(T value)? selector}) {
     return Bind<T>(inject,
-        isSingleton: true,
-        isLazy: false,
-        export: export,
-        onDispose: onDispose,
-        selector: selector);
+        isSingleton: true, isLazy: false, export: export, onDispose: onDispose, selector: selector);
   }
 
   ///Create single instance for request.
@@ -62,11 +59,7 @@ class Bind<T extends Object> extends BindContract<T> {
       void Function(T value)? onDispose,
       dynamic Function(T value)? selector}) {
     return Bind<T>(inject,
-        isSingleton: true,
-        isLazy: true,
-        export: export,
-        onDispose: onDispose,
-        selector: selector);
+        isSingleton: true, isLazy: true, export: export, onDispose: onDispose, selector: selector);
   }
 
   ///Bind a factory. Always a new constructor when calling Modular.get
@@ -84,6 +77,7 @@ class Bind<T extends Object> extends BindContract<T> {
       bool? isLazy,
       bool? export,
       bool? isScoped,
+      String? name,
       bool? alwaysSerialized,
       void Function(T value)? onDispose,
       Function(T value)? selector}) {
@@ -92,6 +86,7 @@ class Bind<T extends Object> extends BindContract<T> {
       alwaysSerialized: alwaysSerialized ?? this.alwaysSerialized,
       export: export ?? this.export,
       isLazy: isLazy ?? this.isLazy,
+      name: name ?? this.name,
       isSingleton: isSingleton ?? this.isSingleton,
       selector: selector ?? this.selector,
       onDispose: onDispose ?? this.onDispose,
@@ -100,8 +95,7 @@ class Bind<T extends Object> extends BindContract<T> {
 }
 
 /// AsyncBind represents an asynchronous Bind that can be resolved before module initialization by calling Modular.isModuleReady() or called with Modular.getAsync()
-class AsyncBind<T extends Object> extends Bind<Future<T>>
-    implements AsyncBindContract<T> {
+class AsyncBind<T extends Object> extends Bind<Future<T>> implements AsyncBindContract<T> {
   @override
   final Future<T> Function(Injector i) asyncInject;
 
@@ -134,6 +128,7 @@ class AsyncBind<T extends Object> extends Bind<Future<T>>
       bool? isLazy,
       bool? export,
       bool? isScoped,
+      String? name,
       bool? alwaysSerialized,
       void Function(Future<T> value)? onDispose,
       Function(Future<T> value)? selector}) {

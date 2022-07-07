@@ -56,6 +56,11 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final store = context.watch<SearchStore>();
 
@@ -78,8 +83,7 @@ class _SearchPageState extends State<SearchPage> {
           Expanded(
             child: store.when(
               onState: _buildList,
-              onLoading: (loading) =>
-                  const Center(child: CircularProgressIndicator()),
+              onLoading: (loading) => const Center(child: CircularProgressIndicator()),
               onError: _buildError,
             ),
           ),

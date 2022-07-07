@@ -4,6 +4,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:modular_interfaces/src/di/injector.dart';
 
+import 'search/domain/repositories/search_repository.dart';
 import 'search/domain/usecases/search_by_text.dart';
 import 'search/external/github/github_search_datasource.dart';
 import 'search/infra/repositories/search_repository_impl.dart';
@@ -33,28 +34,31 @@ class AppModule extends Module {
     //   },
     // ),
 
+    Bind.lazySingleton(
+      (i) => SearchByTextImpl(i<SearchRepository>()),
+    ),
+
+    StoreBind.singleton((i) => SearchStore(i<SearchByText>()), name: 'search-extern'),
     StoreBind.singleton((i) => SearchStore(i<SearchByText>())),
   ];
 
   @override
   final List<ModularRoute> routes = [
     ChildRoute(Modular.initialRoute, child: (_, __) => const SearchPage()),
-    ChildRoute('/details',
-        child: (_, args) => DetailsPage(result: args.data), guards: [GuardT()]),
+    ChildRoute('/details', child: (_, args) => DetailsPage(result: args.data), guards: [GuardT()]),
   ];
 }
 
 class StoreBind {
   const StoreBind._();
 
-  static Bind<T> singleton<T extends Store>(
-    T Function(Injector<dynamic> i) factoryFunction, {
-    bool export = false,
-  }) {
+  static Bind<T> singleton<T extends Store>(T Function(Injector<dynamic> i) factoryFunction,
+      {bool export = false, String name = ''}) {
     return Bind<T>(
       factoryFunction,
       export: export,
       isLazy: false,
+      name: name,
       onDispose: (store) => store.destroy(),
       selector: (store) {
         final notifier = ChangeNotifier();
@@ -70,12 +74,9 @@ class StoreBind {
 }
 
 class BlocBind {
-  static Bind<T> singleton<T extends Bloc>(
-    T Function(Injector<dynamic> i) factoryFunction, {
-    bool export = false,
-  }) {
-    return Bind<T>(factoryFunction, export: true, isLazy: false,
-        onDispose: (bloc) {
+  static Bind<T> singleton<T extends Bloc>(T Function(Injector<dynamic> i) factoryFunction,
+      {bool export = false, String name = ''}) {
+    return Bind<T>(factoryFunction, export: true, isLazy: false, name: name, onDispose: (bloc) {
       bloc.close();
     }, selector: (bloc) {
       return bloc.stream;

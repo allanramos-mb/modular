@@ -28,3 +28,25 @@ class SearchRepositoryImpl implements SearchRepository {
     }
   }
 }
+
+class SearchRepositoryImpl2 implements SearchRepository {
+  final SearchDatasource datasource;
+
+  SearchRepositoryImpl2(this.datasource);
+
+  @override
+  Future<Either<Failure, List<Result>>> getUsers(String searchText) async {
+    try {
+      final list = await datasource.searchText(searchText);
+      if (list == null) {
+        return Left<Failure, List<Result>>(DatasourceResultNull());
+      }
+      if (list.isEmpty) {
+        return Left(EmptyList());
+      }
+      return Right<Failure, List<Result>>(list);
+    } catch (e) {
+      return Left<Failure, List<Result>>(ErrorSearch());
+    }
+  }
+}

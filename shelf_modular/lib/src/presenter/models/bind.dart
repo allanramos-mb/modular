@@ -8,10 +8,7 @@ class Bind<T extends Object> extends BindContract<T> {
     bool export = false,
     bool isScoped = true,
   }) : super(factoryFunction,
-            isSingleton: isSingleton,
-            isLazy: isLazy,
-            export: export,
-            isScoped: isScoped);
+            isSingleton: isSingleton, isLazy: isLazy, export: export, isScoped: isScoped);
 
   ///Bind  an already exist 'Instance' of object..
   static Bind<T> instance<T extends Object>(T instance, {bool export = false}) {
@@ -22,24 +19,39 @@ class Bind<T extends Object> extends BindContract<T> {
   ///Bind a 'Singleton' class.
   ///Built together with the module.
   ///The instance will always be the same.
-  static Bind<T> singleton<T extends Object>(T Function(Injector i) inject,
-      {bool export = false}) {
-    return Bind<T>(inject,
-        isSingleton: true, isLazy: false, isScoped: false, export: export);
+  static Bind<T> singleton<T extends Object>(T Function(Injector i) inject, {bool export = false}) {
+    return Bind<T>(inject, isSingleton: true, isLazy: false, isScoped: false, export: export);
   }
 
   ///Create single instance for request.
-  static Bind<T> scoped<T extends Object>(T Function(Injector i) inject,
-      {bool export = false}) {
-    return Bind<T>(inject,
-        isSingleton: true, isLazy: true, isScoped: true, export: export);
+  static Bind<T> scoped<T extends Object>(T Function(Injector i) inject, {bool export = false}) {
+    return Bind<T>(inject, isSingleton: true, isLazy: true, isScoped: true, export: export);
   }
 
   ///Bind a factory. Always a new constructor when calling Modular.get
-  static Bind<T> factory<T extends Object>(T Function(Injector i) inject,
-      {bool export = false}) {
-    return Bind<T>(inject,
-        isSingleton: false, isLazy: true, isScoped: false, export: export);
+  static Bind<T> factory<T extends Object>(T Function(Injector i) inject, {bool export = false}) {
+    return Bind<T>(inject, isSingleton: false, isLazy: true, isScoped: false, export: export);
+  }
+
+  @override
+  BindContract<E> cast<E extends Object>() {
+    // TODO: implement cast
+    throw UnimplementedError();
+  }
+
+  @override
+  BindContract<T> copyWith(
+      {T Function(Injector i)? factoryFunction,
+      bool? isSingleton,
+      bool? isLazy,
+      bool? export,
+      bool? isScoped,
+      bool? alwaysSerialized,
+      String? name,
+      void Function(T value)? onDispose,
+      Function(T value)? selector}) {
+    // TODO: implement copyWith
+    throw UnimplementedError();
   }
 }
 

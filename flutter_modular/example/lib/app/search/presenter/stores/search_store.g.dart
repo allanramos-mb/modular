@@ -6,8 +6,5 @@ part of 'search_store.dart';
 // InjectionGenerator
 // **************************************************************************
 
-final $SearchStore = Bind(
-  (i) => SearchStore(i<SearchByText>()),
-  isSingleton: true,
-  isLazy: true,
-);
+final $SearchStore = Bind((i) => SearchStore(i<SearchByText>()),
+    isSingleton: true, isLazy: true, name: 'search');
